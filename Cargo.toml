@@ -2,6 +2,8 @@
 name = "bring-rs"
 version = "0.1.0"
 edition = "2021"
+license = "Apache-2.0"
+description = "A simple library for interacting with the getbring.com API"
 
 [dependencies]
 anyhow = "1.0.91"
