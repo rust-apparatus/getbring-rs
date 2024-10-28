@@ -5,6 +5,7 @@ use reqwest::{
 };
 use serde::Deserialize;
 use std::collections::HashMap;
+use tracing::instrument;
 
 const API_BASE_URL: &str = "https://api.getbring.com/rest/v2/";
 const API_KEY: &str = "cof4Nc6D8saplXjE3h3HXqHH8m7VU2i1Gs0g85Sp";
@@ -108,6 +109,7 @@ impl BringClient {
         }
     }
 
+    #[instrument(skip(self))]
     fn get_headers(&self) -> HeaderMap {
         let mut headers = HeaderMap::new();
         headers.insert("X-BRING-API-KEY", HeaderValue::from_static(API_KEY));
@@ -129,6 +131,7 @@ impl BringClient {
         headers
     }
 
+    #[instrument(skip(self))]
     pub async fn login(&mut self) -> Result<()> {
         let params = [
             ("email", self.email.as_str()),
@@ -156,6 +159,7 @@ impl BringClient {
         Ok(())
     }
 
+    #[instrument(skip(self))]
     pub async fn load_lists(&self) -> Result<LoadListsResponse> {
         let uuid = self.uuid.as_ref().context("Not logged in")?;
 
@@ -173,6 +177,7 @@ impl BringClient {
             .context("Failed to parse lists response")
     }
 
+    #[instrument(skip(self))]
     pub async fn get_items(&self, list_uuid: &str) -> Result<GetItemsResponse> {
         let response = self
             .client
@@ -188,6 +193,7 @@ impl BringClient {
             .context("Failed to parse items response")
     }
 
+    #[instrument(skip(self))]
     pub async fn get_items_details(&self, list_uuid: &str) -> Result<Vec<GetItemsDetailsEntry>> {
         let response = self
             .client
@@ -203,6 +209,7 @@ impl BringClient {
             .context("Failed to parse item details response")
     }
 
+    #[instrument(skip(self))]
     pub async fn save_item(
         &self,
         list_uuid: &str,
@@ -234,6 +241,7 @@ impl BringClient {
         Ok(())
     }
 
+    #[instrument(skip(self))]
     pub async fn remove_item(&self, list_uuid: &str, item_name: &str) -> Result<()> {
         let mut headers = self.get_headers();
         headers.insert(
@@ -260,6 +268,7 @@ impl BringClient {
         Ok(())
     }
 
+    #[instrument(skip(self))]
     pub async fn get_all_users_from_list(
         &self,
         list_uuid: &str,
@@ -278,6 +287,7 @@ impl BringClient {
             .context("Failed to parse users response")
     }
 
+    #[instrument(skip(self))]
     pub async fn load_translations(&self, locale: &str) -> Result<HashMap<String, String>> {
         let response = self
             .client
@@ -313,6 +323,7 @@ impl BringClient {
     ///     println!("List not found!");
     /// }
     /// ```
+    #[instrument(skip(self))]
     pub async fn get_list_id_by_name(&self, list_name: &str) -> Result<Option<String>> {
         let lists = self.load_lists().await?;
 
@@ -336,6 +347,7 @@ impl BringClient {
     ///
     /// # Errors
     /// Returns an error if the list is not found or if there's an API error
+    #[instrument(skip(self))]
     pub async fn get_list_id_by_name_required(&self, list_name: &str) -> Result<String> {
         self.get_list_id_by_name(list_name)
             .await?

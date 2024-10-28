@@ -1,6 +1,6 @@
 [package]
 name = "getbring-rs"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 license = "Apache-2.0"
 description = "A simple library for interacting with the getbring.com API"
@@ -10,3 +10,5 @@ anyhow = "1.0.91"
 reqwest = { version = "0.12.8", features = ["json"] }
 serde = { version = "1.0.213", features = ["derive"] }
 tokio = { version = "1.41.0", features = ["full"] }
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
