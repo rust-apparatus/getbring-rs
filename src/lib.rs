@@ -294,4 +294,51 @@ impl BringClient {
             .await
             .context("Failed to parse translations")
     }
+
+    /// Gets a list UUID by its name. Returns None if no list with the given name is found.
+    /// Case-insensitive matching is used for convenience.
+    ///
+    /// # Arguments
+    /// * `list_name` - The name of the list to find
+    ///
+    /// # Returns
+    /// * `Result<Option<String>>` - The UUID of the list if found, None otherwise
+    ///
+    /// # Example
+    /// ```rust
+    /// let list_id = client.get_list_id_by_name("Groceries").await?;
+    /// if let Some(id) = list_id {
+    ///     println!("Found list ID: {}", id);
+    /// } else {
+    ///     println!("List not found!");
+    /// }
+    /// ```
+    pub async fn get_list_id_by_name(&self, list_name: &str) -> Result<Option<String>> {
+        let lists = self.load_lists().await?;
+
+        // Case-insensitive search for the list name
+        Ok(lists
+            .lists
+            .into_iter()
+            .find(|list| list.name.to_lowercase() == list_name.to_lowercase())
+            .map(|list| list.list_uuid))
+    }
+
+    /// Gets a list UUID by its name, returning an error if the list is not found.
+    /// This is a convenience wrapper around get_list_id_by_name for cases where
+    /// you expect the list to exist.
+    ///
+    /// # Arguments
+    /// * `list_name` - The name of the list to find
+    ///
+    /// # Returns
+    /// * `Result<String>` - The UUID of the list
+    ///
+    /// # Errors
+    /// Returns an error if the list is not found or if there's an API error
+    pub async fn get_list_id_by_name_required(&self, list_name: &str) -> Result<String> {
+        self.get_list_id_by_name(list_name)
+            .await?
+            .context(format!("List with name '{}' not found", list_name))
+    }
 }
